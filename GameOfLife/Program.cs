@@ -24,6 +24,10 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Controlleert of er input van de gebruiker is en handelt deze af.
+        /// </summary>
+        /// <returns>False als gebruiker Escape ("stop simulatie") ingeeft, anders True.</returns>
         private static bool HandleUserInput()
         {
             if (Console.KeyAvailable)
@@ -60,6 +64,9 @@ namespace GameOfLife
             return true;
         }
 
+        /// <summary>
+        /// Print menu onder het raster.
+        /// </summary>
         private static void PrintMenu()
         {
             Console.SetCursorPosition(0, game.Rows + 2);
@@ -68,7 +75,10 @@ namespace GameOfLife
             Console.WriteLine("[+] verhoog snelheid\t[-] verlaag snelheid\t[ENTER] reset snelheid");
         }
 
-        // Print het huidige raster naar de console
+        /// <summary>
+        /// Print het huidige raster naar de console
+        /// </summary>
+        /// <param name="grid">Af te printen raster.</param>
         static void PrintGrid(bool[,] grid)
         {
             int rows = grid.GetLength(0);

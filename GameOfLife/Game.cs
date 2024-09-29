@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameOfLife
 {
@@ -34,6 +36,13 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Update het raster volgens de regels van het spel:
+        ///     Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+        ///     Any live cell with two or three live neighbours lives on to the next generation.
+        ///     Any live cell with more than three live neighbours dies, as if by overpopulation.
+        ///     Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+        /// </summary>
         public void UpdateGrid()
         {
             bool[,] newGrid = new bool[Rows, Cols];
@@ -43,21 +52,28 @@ namespace GameOfLife
                 for (int c = 0; c < Cols; c++)
                 {
                     int livingNeighbors = CountLivingNeighbors(r, c);
-                    if (Grid[r, c])
+                    if (Grid[r, c]) // cel is levend
                     {
+                        // 2 of 3 levende buren => cel blijft leven
                         newGrid[r, c] = livingNeighbors == 2 || livingNeighbors == 3;
                     }
-                    else
+                    else // cel is dood
                     {
+                        // 3 levende buren => cel wordt levend
                         newGrid[r, c] = livingNeighbors == 3;
                     }
                 }
             }
 
-            Grid = newGrid; // Update het raster
+            Grid = newGrid; // update het raster
         }
 
-        // Tel het aantal levende buren van een cel
+        /// <summary>
+        /// Telt het aantal levende buren van een cel.
+        /// </summary>
+        /// <param name="row">Rij waar de cel zich bevindt.</param>
+        /// <param name="col">Kolom waar de cel zich bevindt.</param>
+        /// <returns></returns>
         private int CountLivingNeighbors(int row, int col)
         {
             int livingNeighbors = 0;
@@ -66,7 +82,7 @@ namespace GameOfLife
             {
                 for (int c = -1; c <= 1; c++)
                 {
-                    if (r == 0 && c == 0) continue; // Sla de cel zelf over
+                    if (r == 0 && c == 0) continue; // cel zelf wordt niet meegeteld
 
                     int neighborRow = row + r;
                     int neighborCol = col + c;
