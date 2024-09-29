@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace GameOfLife
+﻿namespace GameOfLife
 {
     internal class Program
     {
