@@ -1,119 +1,88 @@
 ﻿using System.Data;
 
-namespace ConsoleApp14
+namespace GameOfLife
 {
     internal class Program
     {
-        const int rows = 20;
-        const int cols = 40;
-        static bool[,] grid = new bool[rows, cols];
+        private const int startDelay = 100;
+        private const string activeCell = "#";
+        private const string inactiveCell = ".";
+
+        private static readonly Game game = new();
+        private static int delay = startDelay;
 
         static void Main()
         {
             PrintMenu();
-            InitializeGrid();
-            bool doorgaan = true;
-            while (doorgaan)
+
+            while (HandleUserInput())
             {
-                if (Console.KeyAvailable)
-                {
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.Escape:
-                            doorgaan = false;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                //Console.Clear();
-                PrintGrid();
-                UpdateGrid();
-                Thread.Sleep(100); // Pauze voor duidelijkheid
+                PrintGrid(game.Grid);
+                game.UpdateGrid();
+
+                Thread.Sleep(delay); // Pauze voor duidelijkheid
             }
+        }
+
+        private static bool HandleUserInput()
+        {
+            if (Console.KeyAvailable)
+            {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                switch (key.Key)
+                {
+                    case ConsoleKey.Escape:
+                        Console.Clear();
+                        return false;
+                    case ConsoleKey.OemPlus:
+                    case ConsoleKey.Add:
+                        delay -= 10;
+                        if (delay < 0)
+                            delay = 0;
+                        PrintMenu();
+                        break;
+                    case ConsoleKey.OemMinus:
+                    case ConsoleKey.Subtract:
+                        delay += 10;
+                        if (delay > startDelay + 100)
+                            delay = startDelay + 100;
+                        PrintMenu();
+                        break;
+                    case ConsoleKey.Enter:
+                        delay = startDelay;
+                        PrintMenu();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return true;
         }
 
         private static void PrintMenu()
         {
-            Console.SetCursorPosition(0, rows + 2);
-            Console.WriteLine("Druk op ESC om te stoppen");
-        }
-
-        // Genereer willekeurige starttoestand
-        static void InitializeGrid()
-        {
-            Random random = new();
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < cols; c++)
-                {
-                    grid[r, c] = random.Next(2) == 0;
-                }
-            }
+            Console.SetCursorPosition(0, game.Rows + 2);
+            Console.WriteLine($"Snelheid: {100 - delay}   ");
+            Console.WriteLine("[ESC] stop simulatie");
+            Console.WriteLine("[+] verhoog snelheid\t[-] verlaag snelheid\t[ENTER] reset snelheid");
         }
 
         // Print het huidige raster naar de console
-        static void PrintGrid()
+        static void PrintGrid(bool[,] grid)
         {
+            int rows = grid.GetLength(0);
+            int cols = grid.GetLength(1);
+
             Console.SetCursorPosition(0, 0);
             for (int r = 0; r < rows; r++)
             {
                 for (int c = 0; c < cols; c++)
                 {
-                    Console.Write(grid[r, c] ? "#" : ".");
+                    Console.Write(grid[r, c] ? activeCell : inactiveCell);
                 }
                 Console.WriteLine();
             }
         }
-
-        // Update het raster volgens de regels van het spel
-        static void UpdateGrid()
-        {
-            bool[,] newGrid = new bool[rows, cols];
-
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < cols; c++)
-                {
-                    int livingNeighbors = CountLivingNeighbors(r, c);
-                    if (grid[r, c])
-                    {
-                        newGrid[r, c] = livingNeighbors == 2 || livingNeighbors == 3;
-                    }
-                    else
-                    {
-                        newGrid[r, c] = livingNeighbors == 3;
-                    }
-                }
-            }
-
-            grid = newGrid; // Update het raster
-        }
-
-        // Tel het aantal levende buren van een cel
-        static int CountLivingNeighbors(int row, int col)
-        {
-            int livingNeighbors = 0;
-
-            for (int r = -1; r <= 1; r++)
-            {
-                for (int c = -1; c <= 1; c++)
-                {
-                    if (r == 0 && c == 0) continue; // Sla de cel zelf over
-
-                    int neighborRow = row + r;
-                    int neighborCol = col + c;
-
-                    if (neighborRow >= 0 && neighborRow < rows && neighborCol >= 0 && neighborCol < cols)
-                    {
-                        if (grid[neighborRow, neighborCol]) livingNeighbors++;
-                    }
-                }
-            }
-
-            return livingNeighbors;
-        }
     }
-
 }
