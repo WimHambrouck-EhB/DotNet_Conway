@@ -11,6 +11,9 @@
 
         static void Main()
         {
+            Console.CursorVisible = false;
+            Console.Clear();
+
             PrintMenu();
 
             while (HandleUserInput())
