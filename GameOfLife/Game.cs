@@ -2,21 +2,36 @@
 {
     internal class Game
     {
-        public int Rows { get; } = 20;
-        public int Cols { get; } = 40;
+        public int Rows { get; }
+        public int Cols { get; }
 
         public bool[,] Grid { get; private set; }
 
-        public Game()
+        /// <summary>
+        /// Initialiseert een nieuw spel met raster van 20x50.
+        /// </summary>
+        public Game() : this(20, 50)
         {
+
+        }
+
+        /// <summary>
+        /// Initialiseert een nieuw spel met opgegeven aantal rijen en kolommen.
+        /// </summary>
+        /// <param name="rows">Aantal rijen in het raster.</param>
+        /// <param name="cols">Aantal kolommen in het raster.</param>
+        public Game(int rows, int cols)
+        {
+            Rows = rows;
+            Cols = cols;
             Grid = new bool[Rows, Cols];
-            InitializeGrid();
+            InitializeRandomGrid();
         }
 
         /// <summary>
         /// Genereer willekeurige starttoestand.
         /// </summary>
-        private void InitializeGrid()
+        private void InitializeRandomGrid()
         {
             Random random = new();
             for (int r = 0; r < Rows; r++)
@@ -37,19 +52,22 @@
         /// </summary>
         public void UpdateGrid()
         {
+            // nieuw raster voor de volgende generatie
+            // merk op: bool is standaard false, dus alle cellen zijn initieel 'dood'
             bool[,] newGrid = new bool[Rows, Cols];
 
             for (int r = 0; r < Rows; r++)
             {
                 for (int c = 0; c < Cols; c++)
                 {
+                    // op basis van huidige raster het nieuwe raster updaten
                     int livingNeighbors = CountLivingNeighbors(r, c);
-                    if (Grid[r, c]) // cel is levend
+                    if (Grid[r, c]) // cel is momenteel levend
                     {
                         // 2 of 3 levende buren => cel blijft leven
                         newGrid[r, c] = livingNeighbors == 2 || livingNeighbors == 3;
                     }
-                    else // cel is dood
+                    else // cel is momenteel dood
                     {
                         // 3 levende buren => cel wordt levend
                         newGrid[r, c] = livingNeighbors == 3;
@@ -70,6 +88,8 @@
         {
             int livingNeighbors = 0;
 
+            // deze lus kan geparalelliseerd worden (zie Parrallel.For)
+            // dit komt in later lessen aan bod
             for (int r = -1; r <= 1; r++)
             {
                 for (int c = -1; c <= 1; c++)
