@@ -3,11 +3,11 @@
     internal class Program
     {
         private const int StartDelay = 100;
-        private const string ActiveCell = "#";
-        private const string InactiveCell = ".";
+        private const char ActiveCell = '#';
+        private const char InactiveCell = '.';
 
         private static readonly Game Game = new();
-        private static int Delay = StartDelay;
+        private static int CurrentDelay = StartDelay;
 
         static void Main()
         {
@@ -18,7 +18,7 @@
                 PrintGrid();
                 Game.UpdateGrid();
 
-                Thread.Sleep(Delay); // Pauze voor duidelijkheid
+                Thread.Sleep(CurrentDelay); // Pauze voor duidelijkheid
             }
 
             Console.Clear();
@@ -43,20 +43,20 @@
                     case ConsoleKey.OemPlus:
                     case ConsoleKey.Add:
                         // '+': verhoog snelheid (dus minder delay)
-                        if (Delay - 10 >= 0)
-                            Delay -= 10;
+                        if (CurrentDelay - 10 >= 0)
+                            CurrentDelay -= 10;
                         PrintMenu();
                         break;
                     case ConsoleKey.OemMinus:
                     case ConsoleKey.Subtract:
                         // '-': verlaag snelheid (dus meer delay)
-                        if (Delay + 10 <= StartDelay + 100)
-                            Delay += 10;
+                        if (CurrentDelay + 10 <= StartDelay + 100)
+                            CurrentDelay += 10;
                         PrintMenu();
                         break;
                     case ConsoleKey.Enter:
                         // <ENTER>: reset snelheid
-                        Delay = StartDelay;
+                        CurrentDelay = StartDelay;
                         PrintMenu();
                         break;
                     default:
@@ -73,7 +73,7 @@
         private static void PrintMenu()
         {
             Console.SetCursorPosition(0, Game.Rows + 2);
-            Console.WriteLine($"Snelheid: {100 - Delay}   ");
+            Console.WriteLine($"Snelheid: {100 - CurrentDelay}   ");
             Console.WriteLine("[ESC] stop simulatie");
             Console.WriteLine("[+] verhoog snelheid\t[-] verlaag snelheid\t[ENTER] reset snelheid");
         }

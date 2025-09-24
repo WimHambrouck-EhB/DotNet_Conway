@@ -75,7 +75,7 @@
                 }
             }
 
-            Grid = newGrid; // update het raster
+            Grid = newGrid; // vervang het huidige raster
         }
 
         /// <summary>
@@ -88,8 +88,9 @@
         {
             int livingNeighbors = 0;
 
-            // deze lus kan geparalelliseerd worden (zie Parrallel.For)
-            // dit komt in later lessen aan bod
+            // Opmerking
+            //  deze lus kan geparalelliseerd worden voor betere performantie (zie Parrallel.For)
+            //  dit komt in later lessen aan bod
             for (int r = -1; r <= 1; r++)
             {
                 for (int c = -1; c <= 1; c++)
