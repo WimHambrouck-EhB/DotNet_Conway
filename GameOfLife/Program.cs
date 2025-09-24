@@ -2,12 +2,12 @@
 {
     internal class Program
     {
-        private const int startDelay = 100;
-        private const string activeCell = "#";
-        private const string inactiveCell = ".";
+        private const int StartDelay = 100;
+        private const string ActiveCell = "#";
+        private const string InactiveCell = ".";
 
-        private static readonly Game game = new();
-        private static int delay = startDelay;
+        private static readonly Game Game = new();
+        private static int Delay = StartDelay;
 
         static void Main()
         {
@@ -15,43 +15,48 @@
 
             while (HandleUserInput())
             {
-                PrintGrid(game.Grid);
-                game.UpdateGrid();
+                PrintGrid();
+                Game.UpdateGrid();
 
-                Thread.Sleep(delay); // Pauze voor duidelijkheid
+                Thread.Sleep(Delay); // Pauze voor duidelijkheid
             }
+
+            Console.Clear();
         }
 
         /// <summary>
-        /// Controlleert of er input van de gebruiker is en handelt deze af.
+        /// Controleert of er input van de gebruiker is en handelt deze af.
         /// </summary>
         /// <returns>False als gebruiker Escape ("stop simulatie") ingeeft, anders True.</returns>
         private static bool HandleUserInput()
         {
+            // Check of een toets is ingedrukt
             if (Console.KeyAvailable)
             {
+                // Lees de toets in zonder deze weer te geven
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 switch (key.Key)
                 {
                     case ConsoleKey.Escape:
-                        Console.Clear();
+                        // <ESC>: stop simulatie
                         return false;
                     case ConsoleKey.OemPlus:
                     case ConsoleKey.Add:
-                        delay -= 10;
-                        if (delay < 0)
-                            delay = 0;
+                        // '+': verhoog snelheid (dus minder delay)
+                        if (Delay - 10 >= 0)
+                            Delay -= 10;
                         PrintMenu();
                         break;
                     case ConsoleKey.OemMinus:
                     case ConsoleKey.Subtract:
-                        delay += 10;
-                        if (delay > startDelay + 100)
-                            delay = startDelay + 100;
+                        // '-': verlaag snelheid (dus meer delay)
+                        if (Delay + 10 <= StartDelay + 100)
+                            Delay += 10;
                         PrintMenu();
                         break;
                     case ConsoleKey.Enter:
-                        delay = startDelay;
+                        // <ENTER>: reset snelheid
+                        Delay = StartDelay;
                         PrintMenu();
                         break;
                     default:
@@ -67,8 +72,8 @@
         /// </summary>
         private static void PrintMenu()
         {
-            Console.SetCursorPosition(0, game.Rows + 2);
-            Console.WriteLine($"Snelheid: {100 - delay}   ");
+            Console.SetCursorPosition(0, Game.Rows + 2);
+            Console.WriteLine($"Snelheid: {100 - Delay}   ");
             Console.WriteLine("[ESC] stop simulatie");
             Console.WriteLine("[+] verhoog snelheid\t[-] verlaag snelheid\t[ENTER] reset snelheid");
         }
@@ -77,17 +82,14 @@
         /// Print het huidige raster naar de console
         /// </summary>
         /// <param name="grid">Af te printen raster.</param>
-        static void PrintGrid(bool[,] grid)
+        static void PrintGrid()
         {
-            int rows = grid.GetLength(0);
-            int cols = grid.GetLength(1);
-
             Console.SetCursorPosition(0, 0);
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < Game.Rows; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < Game.Cols; c++)
                 {
-                    Console.Write(grid[r, c] ? activeCell : inactiveCell);
+                    Console.Write(Game.Grid[r, c] ? ActiveCell : InactiveCell);
                 }
                 Console.WriteLine();
             }
