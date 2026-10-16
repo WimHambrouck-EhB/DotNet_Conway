@@ -88,11 +88,11 @@
         static void PrintGrid()
         {
             Console.SetCursorPosition(0, 0);
-            for (int r = 0; r < Game.Rows; r++)
+            for (int row = 0; row < Game.Rows; row++)
             {
-                for (int c = 0; c < Game.Cols; c++)
+                for (int col = 0; col < Game.Cols; col++)
                 {
-                    Console.Write(Game.Grid[r, c] ? ActiveCell : InactiveCell);
+                    Console.Write(Game.Grid[row, col] ? ActiveCell : InactiveCell);
                 }
                 Console.WriteLine();
             }
