@@ -1,13 +1,20 @@
-﻿namespace GameOfLife
+﻿using System.Text;
+
+namespace GameOfLife
 {
     internal class Program
     {
-        private const int StartDelay = 100;
         private const char ActiveCell = '#';
         private const char InactiveCell = '.';
 
-        private static readonly Game Game = new();
+        private const int StartDelay = 100;
+        private const int MinDelay = 0;
+        private const int MaxDelay = StartDelay + 100;        
+        private const int DelayStep = 10;
         private static int CurrentDelay = StartDelay;
+        
+        private static readonly Game Game = new();
+        private static readonly StringBuilder GridOutput = new();
 
         static void Main()
         {
@@ -45,16 +52,14 @@
                         return false;
                     case ConsoleKey.OemPlus:
                     case ConsoleKey.Add:
-                        // '+': verhoog snelheid (dus minder delay)
-                        if (CurrentDelay - 10 >= 0)
-                            CurrentDelay -= 10;
+                        // verhoog snelheid (dus minder delay)
+                        CurrentDelay = Math.Clamp(CurrentDelay - DelayStep, MinDelay, MaxDelay);
                         PrintMenu();
                         break;
                     case ConsoleKey.OemMinus:
                     case ConsoleKey.Subtract:
-                        // '-': verlaag snelheid (dus meer delay)
-                        if (CurrentDelay + 10 <= StartDelay + 100)
-                            CurrentDelay += 10;
+                        // verlaag snelheid (dus meer delay)
+                        CurrentDelay = Math.Clamp(CurrentDelay + DelayStep, MinDelay, MaxDelay);
                         PrintMenu();
                         break;
                     case ConsoleKey.Enter:
@@ -76,7 +81,21 @@
         private static void PrintMenu()
         {
             Console.SetCursorPosition(0, Game.Rows + 2);
-            Console.WriteLine($"Snelheid: {100 - CurrentDelay}   ");
+            
+            string speed;
+            if (CurrentDelay == MaxDelay)
+            {
+                speed = "MIN";
+            }
+            else if (CurrentDelay == MinDelay)
+            {
+                speed = "MAX";
+            } else
+            {
+                speed = (StartDelay - CurrentDelay).ToString();
+            }
+
+            Console.WriteLine($"Snelheid: {speed}   ");
             Console.WriteLine("[ESC] stop simulatie");
             Console.WriteLine("[+] verhoog snelheid\t[-] verlaag snelheid\t[ENTER] reset snelheid");
         }
@@ -87,15 +106,18 @@
         /// <param name="grid">Af te printen raster.</param>
         static void PrintGrid()
         {
-            Console.SetCursorPosition(0, 0);
+            GridOutput.Clear();
             for (int row = 0; row < Game.Rows; row++)
             {
                 for (int col = 0; col < Game.Cols; col++)
                 {
-                    Console.Write(Game.Grid[row, col] ? ActiveCell : InactiveCell);
+                    GridOutput.Append(Game.Grid[row, col] ? ActiveCell : InactiveCell);
                 }
-                Console.WriteLine();
+                GridOutput.AppendLine();
             }
+
+            Console.SetCursorPosition(0, 0);
+            Console.Write(GridOutput);
         }
     }
 }
